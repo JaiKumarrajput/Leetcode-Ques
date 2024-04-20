@@ -1,51 +1,27 @@
 class Solution {
     public int[][] findFarmland(int[][] land) {
-        int rows = land.length;
-        int cols = land[0].length;
-        Set<String> visited = new HashSet<>();
-        List<int[]> result = new ArrayList<>();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (land[i][j] == 1 && !visited.contains(i + "," + j)) {
-                    int[] bounds = dfs(land, visited, i, j);
-                    result.add(bounds);
+        boolean[][] visited = new boolean[land.length][land[0].length];
+        List<int[]> ans = new ArrayList<>();
+        for(int i=0;i<land.length;i++){
+            for(int j=0;j<land[0].length;j++){
+                if(!visited[i][j] && land[i][j]==1){
+                    int i_iterator = i;
+                    int j_iterator = j;
+                    while(i_iterator<land.length && land[i_iterator][j]==1){
+                        i_iterator++;
+                    }
+                    while(j_iterator<land[0].length && land[i][j_iterator]==1){
+                        j_iterator++;
+                    }
+                    for(int v1=i;v1<i_iterator;v1++){
+                        for(int v2=j;v2<j_iterator;v2++){
+                            visited[v1][v2]=true;
+                        }
+                    }
+                    ans.add(new int[]{i,j,i_iterator-1,j_iterator-1});
                 }
             }
         }
-
-        return result.toArray(new int[result.size()][]);
-    }
-
-    private int[] dfs(int[][] land, Set<String> visited, int x, int y) {
-        Stack<int[]> stack = new Stack<>();
-        stack.push(new int[]{x, y});
-        visited.add(x + "," + y);
-
-        int minRow = x, minCol = y;
-        int maxRow = x, maxCol = y;
-
-        while (!stack.isEmpty()) {
-            int[] current = stack.pop();
-            int curX = current[0], curY = current[1];
-
-            int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-            for (int[] dir : directions) {
-                int nx = curX + dir[0];
-                int ny = curY + dir[1];
-
-                if (nx >= 0 && nx < land.length && ny >= 0 && ny < land[0].length &&
-                    land[nx][ny] == 1 && !visited.contains(nx + "," + ny)) {
-                    visited.add(nx + "," + ny);
-                    stack.push(new int[]{nx, ny});
-                    minRow = Math.min(minRow, nx);
-                    minCol = Math.min(minCol, ny);
-                    maxRow = Math.max(maxRow, nx);
-                    maxCol = Math.max(maxCol, ny);
-                }
-            }
-        }
-
-        return new int[]{minRow, minCol, maxRow, maxCol};
+        return ans.toArray(new int[ans.size()][]);
     }
 }
